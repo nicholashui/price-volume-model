@@ -43,7 +43,7 @@ Trade arrival times form a point process. Each trade carries a mark (size and si
 
 $$
 V_t = \sum_{t_i\le t} v_i, \qquad
-P_t = P_0 + \sum_{t_i\le t}\Bigl(\operatorname{impact}(v_i,\operatorname{sign}_i) + \operatorname{noise}_i\Bigr)
+P_t = P_0 + \sum_{t_i\le t}\Bigl(\text{impact}(v_i,\text{sign}_i) + \text{noise}_i\Bigr)
 $$
 
 Temporary impact is a function of the instantaneous trading rate and subsequently decays; permanent impact remains.
@@ -166,12 +166,12 @@ $$
 | Parameter | Identification |
 |-----------|----------------|
 | $\theta$ | Long-run mean of the volume factor $V$ |
-| $\kappa$ | $-\frac1\Delta\log\operatorname{Corr}(V_{t+\Delta},V_t)$ |
+| $\kappa$ | $-\frac1\Delta\log\text{Corr}(V_{t+\Delta},V_t)$ |
 | $\xi$ | $\sqrt{\sum(\Delta V)^2\big/\sum V\cdot\Delta t}$ |
 | $\mu$ | Residual average drift of price after removing imbalance |
 | $\alpha$ | Regression coefficient of returns on $(\lambda^+-\lambda^-)$ |
 | $\sigma(V)$ | Fitted function of realised volatility versus $V$ |
-| $\rho$ | Instantaneous correlation $\operatorname{Corr}(dP,dV)$ |
+| $\rho$ | Instantaneous correlation $\text{Corr}(dP,dV)$ |
 
 The same $\kappa,\theta$ can be recovered by regressing observed total intensity on the current level of $V$.
 
@@ -191,7 +191,7 @@ $$
 
 $$
 \begin{aligned}
-r_t &= \bigl(\mu - \tfrac12\sigma(V_t)^2\bigr)\Delta t + \alpha\cdot\operatorname{imbalance}_t + \sigma(V_t)\sqrt{\Delta t}\,\varepsilon_t^{(1)}, \\
+r_t &= \bigl(\mu - \tfrac12\sigma(V_t)^2\bigr)\Delta t + \alpha\cdot\text{imbalance}_t + \sigma(V_t)\sqrt{\Delta t}\,\varepsilon_t^{(1)}, \\
 \Delta v_t &= \kappa(\theta - V_t)\Delta t + \text{noise}.
 \end{aligned}
 $$
