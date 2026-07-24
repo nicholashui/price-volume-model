@@ -99,8 +99,8 @@ Substituting the intensity representation into the SV model yields
 
 $$
 \begin{aligned}
-dP_t &= \Bigl(\mu P_t + \alpha(\lambda^+_t - \lambda^-_t)\Bigr)\, dt
-+ \sigma(\lambda^+_t + \lambda^-_t)\, P_t\, dW_t, \\
+dP_t &= \Bigl(\mu P_t + \alpha(\lambda^+_t - \lambda^-_t)\Bigr)\, dt +
+\sigma(\lambda^+_t + \lambda^-_t)\, P_t\, dW_t, \\
 dV_t &= \bar{v}\,(\lambda^+_t + \lambda^-_t)\, dt.
 \end{aligned}
 $$
@@ -130,12 +130,12 @@ $$
 $$
 \begin{aligned}
 \lambda^+_t &= \frac12\Biggl(
-\frac{1}{\bar{v}}\frac{dV_t}{dt}
-+ \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
+\frac{1}{\bar{v}}\frac{dV_t}{dt} +
+\frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
 \Biggr), \\
 \lambda^-_t &= \frac12\Biggl(
-\frac{1}{\bar{v}}\frac{dV_t}{dt}
-- \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
+\frac{1}{\bar{v}}\frac{dV_t}{dt} -
+\frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
 \Biggr).
 \end{aligned}
 $$
@@ -149,12 +149,12 @@ Matching the volume drift to the CIR mean-reversion term gives the intensity exp
 $$
 \begin{aligned}
 \lambda^+_t &= \frac12\left(
-\frac{\kappa(\theta - V_t)}{\bar{v}}
-+ \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
+\frac{\kappa(\theta - V_t)}{\bar{v}} +
+\frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
 \right), \\
 \lambda^-_t &= \frac12\left(
-\frac{\kappa(\theta - V_t)}{\bar{v}}
-- \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
+\frac{\kappa(\theta - V_t)}{\bar{v}} -
+\frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
 \right).
 \end{aligned}
 $$
