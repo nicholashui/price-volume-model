@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Large regenerable market data / heavy chart dumps
+btcusdt_1m.parquet
+backtest_chart_data.json
+_smoke_test.html
+price_chart_backtest.html
+direction_backtest_interactive.html
+interactive_chart.html
+index.html
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

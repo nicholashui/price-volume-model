@@ -1,0 +1,5 @@
+If the page is blank:
+1) You need internet once to load Plotly from CDN (cdn.plot.ly)
+2) Or run:  python serve_chart.py
+3) Prefer Chrome/Edge
+4) Wait a few seconds on first load (~6MB file)

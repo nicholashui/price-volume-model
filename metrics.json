@@ -1,0 +1,247 @@
+{
+  "score_start": "2025-08-07 06:35:00",
+  "n_indicators": 114,
+  "models": {
+    "intensity": {
+      "score": -11.0,
+      "n_bets": 627.0,
+      "n_correct": 308.0,
+      "n_wrong": 319.0,
+      "hit_rate": 0.49122807017543857,
+      "coverage": 0.0062024552621947,
+      "params": {
+        "thr": 2.5,
+        "conf_q": 0.6
+      }
+    },
+    "intensity_skew": {
+      "score": -2507.0,
+      "n_bets": 62489.0,
+      "n_correct": 29991.0,
+      "n_wrong": 32498.0,
+      "hit_rate": 0.47994046952263597,
+      "coverage": 0.6181582565857808,
+      "params": {
+        "thr": 0.4
+      }
+    },
+    "intensity_fade": {
+      "score": 2561.0,
+      "n_bets": 70915.0,
+      "n_correct": 36738.0,
+      "n_wrong": 34177.0,
+      "hit_rate": 0.5180568285976168,
+      "coverage": 0.7015105501093096,
+      "params": {
+        "thr": 0.3,
+        "mode": "fade_skew"
+      }
+    },
+    "mean_reversion": {
+      "score": 1618.0,
+      "n_bets": 29550.0,
+      "n_correct": 15584.0,
+      "n_wrong": 13966.0,
+      "hit_rate": 0.5273773265651438,
+      "coverage": 0.292316671447932,
+      "params": {
+        "z_col": "zprice_12",
+        "thr": 1.25,
+        "vol_filter": 1.5
+      }
+    },
+    "momentum": {
+      "score": -1754.0,
+      "n_bets": 35910.0,
+      "n_correct": 17078.0,
+      "n_wrong": 18832.0,
+      "hit_rate": 0.4755778334725703,
+      "coverage": 0.35523152865296914,
+      "params": {
+        "ret_col": "roc_12",
+        "thr": 0.001,
+        "confirm": "tfi_12",
+        "ct": 0.1
+      }
+    },
+    "orderflow": {
+      "score": -153.0,
+      "n_bets": 4171.0,
+      "n_correct": 2009.0,
+      "n_wrong": 2162.0,
+      "hit_rate": 0.48165907456245505,
+      "coverage": 0.04126067128965565,
+      "params": {
+        "thr": 0.35
+      }
+    },
+    "rsi": {
+      "score": 1266.0,
+      "n_bets": 17970.0,
+      "n_correct": 9618.0,
+      "n_wrong": 8352.0,
+      "hit_rate": 0.5352253756260434,
+      "coverage": 0.17776414842366628,
+      "params": {
+        "lo": 35,
+        "hi": 65
+      }
+    },
+    "bollinger": {
+      "score": 1690.0,
+      "n_bets": 22690.0,
+      "n_correct": 12190.0,
+      "n_wrong": 10500.0,
+      "hit_rate": 0.5372410753635963,
+      "coverage": 0.22445567767017183,
+      "params": {
+        "lo": 0.1,
+        "hi": 0.9
+      }
+    },
+    "breakout": {
+      "score": -730.0,
+      "n_bets": 12638.0,
+      "n_correct": 5954.0,
+      "n_wrong": 6684.0,
+      "hit_rate": 0.4711188479189745,
+      "coverage": 0.1250185480121477,
+      "params": {
+        "ret_thr": 0.0008,
+        "vol_thr": 1.0
+      }
+    },
+    "indicator_vote": {
+      "score": -274.0,
+      "n_bets": 4122.0,
+      "n_correct": 1924.0,
+      "n_wrong": 2198.0,
+      "hit_rate": 0.46676370693837943,
+      "coverage": 0.04077594990552879,
+      "params": {
+        "vote_thr": 0.35
+      }
+    },
+    "logistic_wf": {
+      "score": 2195.0,
+      "n_bets": 87451.0,
+      "n_correct": 44823.0,
+      "n_wrong": 42628.0,
+      "hit_rate": 0.5125498850785011,
+      "coverage": 0.8650891788424062,
+      "params": {
+        "proba_thr": 0.52
+      }
+    },
+    "gbm_wf": {
+      "score": 1343.0,
+      "n_bets": 48131.0,
+      "n_correct": 24737.0,
+      "n_wrong": 23394.0,
+      "hit_rate": 0.5139515073445389,
+      "coverage": 0.47612499876346587,
+      "params": {
+        "proba_thr": 0.55
+      }
+    },
+    "rf_wf": {
+      "score": 1557.0,
+      "n_bets": 35583.0,
+      "n_correct": 18570.0,
+      "n_wrong": 17013.0,
+      "hit_rate": 0.5218784250906332,
+      "coverage": 0.3519967553344083,
+      "params": {
+        "proba_thr": 0.55
+      }
+    }
+  },
+  "top3": [
+    "intensity_fade",
+    "logistic_wf",
+    "bollinger"
+  ],
+  "ensemble_2of3": {
+    "score": 2492.0,
+    "n_bets": 47292.0,
+    "n_correct": 24892.0,
+    "n_wrong": 22400.0,
+    "hit_rate": 0.5263469508584961,
+    "coverage": 0.4678253815944366
+  },
+  "ensemble_3of3": {
+    "score": 1158.0,
+    "n_bets": 12396.0,
+    "n_correct": 6777.0,
+    "n_wrong": 5619.0,
+    "hit_rate": 0.5467086156824782,
+    "coverage": 0.12262461791094975
+  },
+  "ranking": [
+    [
+      "intensity_fade",
+      2561.0,
+      0.5180568285976168
+    ],
+    [
+      "logistic_wf",
+      2195.0,
+      0.5125498850785011
+    ],
+    [
+      "bollinger",
+      1690.0,
+      0.5372410753635963
+    ],
+    [
+      "mean_reversion",
+      1618.0,
+      0.5273773265651438
+    ],
+    [
+      "rf_wf",
+      1557.0,
+      0.5218784250906332
+    ],
+    [
+      "gbm_wf",
+      1343.0,
+      0.5139515073445389
+    ],
+    [
+      "rsi",
+      1266.0,
+      0.5352253756260434
+    ],
+    [
+      "intensity",
+      -11.0,
+      0.49122807017543857
+    ],
+    [
+      "orderflow",
+      -153.0,
+      0.48165907456245505
+    ],
+    [
+      "indicator_vote",
+      -274.0,
+      0.46676370693837943
+    ],
+    [
+      "breakout",
+      -730.0,
+      0.4711188479189745
+    ],
+    [
+      "momentum",
+      -1754.0,
+      0.4755778334725703
+    ],
+    [
+      "intensity_skew",
+      -2507.0,
+      0.47994046952263597
+    ]
+  ]
+}

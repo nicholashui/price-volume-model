@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>BTCUSDT Price + Backtest (Memory DB)</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  html,body{margin:0;height:100%;background:#0b0e11;color:#eaecef;font-family:Segoe UI,Arial,sans-serif}
+  #msg{padding:14px;color:#f0b90b}
+  #err{display:none;margin:10px;padding:10px;background:#2a0f14;border:1px solid #f6465d;color:#ffc1c8;border-radius:6px;white-space:pre-wrap}
+  header{padding:10px 14px;border-bottom:1px solid #2b3139}
+  h1{margin:0 0 4px;font-size:16px}
+  #sub{font-size:12px;color:#848e9c}
+  .stats{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{background:#161a1e;border:1px solid #2b3139;border-radius:4px;padding:3px 8px;font-size:12px;color:#848e9c}
+  .chip b{color:#eaecef}.g b{color:#0ecb81}.r b{color:#f6465d}
+  .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 14px;border-bottom:1px solid #2b3139;background:#12161c}
+  .bar button{background:#161a1e;color:#eaecef;border:1px solid #2b3139;border-radius:4px;padding:5px 10px;font-size:12px;cursor:pointer}
+  .bar button.active{border-color:#f0b90b;color:#f0b90b}
+  .bar label{font-size:12px;color:#848e9c}
+  #chart{width:100%;height:calc(100vh - 150px);min-height:560px}
+  #status{padding:4px 14px;font-size:11px;color:#848e9c}
+</style>
+</head>
+<body>
+<div id="msg">Connecting to memory DB server…</div>
+<div id="err"></div>
+<header id="hdr" style="display:none">
+  <h1>BTCUSDT price + direction backtest</h1>
+  <div id="sub"></div>
+  <div class="stats" id="stats"></div>
+</header>
+<div class="bar" id="toolbar" style="display:none">
+  <label>Zoom</label>
+  <button type="button" data-h="1">1H</button>
+  <button type="button" data-h="4">4H</button>
+  <button type="button" data-h="12">12H</button>
+  <button type="button" data-h="24" class="active">1D</button>
+  <button type="button" data-h="72">3D</button>
+  <button type="button" data-h="168">1W</button>
+  <button type="button" data-h="720">1M</button>
+  <button type="button" data-h="0">ALL</button>
+  <label style="margin-left:8px">Source</label>
+  <span id="srcTag" class="chip">memory DB</span>
+</div>
+<div id="status"></div>
+<div id="chart"></div>
+<script>
+(function () {
+  var msg = document.getElementById("msg");
+  var err = document.getElementById("err");
+  var status = document.getElementById("status");
+  var STATS = null;
+  var x0 = 0, x1 = 0;
+  var busy = false, ignore = false;
+
+  function fail(e) {
+    console.error(e);
+    err.style.display = "block";
+    err.textContent = String(e && e.stack ? e.stack : e);
+    msg.textContent = "Failed.";
+  }
+
+  function api(path) {
+    return fetch(path).then(function (r) {
+      if (!r.ok) throw new Error(path + " → HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function toDates(msArr) {
+    var o = new Array(msArr.length);
+    for (var i = 0; i < msArr.length; i++) o[i] = new Date(msArr[i]);
+    return o;
+  }
+
+  function hits(D, sign) {
+    var tx = [], ty = [], ts = [];
+    for (var i = 0; i < D.s.length; i++) {
+      if (D.s[i] === sign) {
+        tx.push(new Date(D.t[i]));
+        ty.push(D.c[i]);
+        ts.push(D.s[i]);
+      }
+    }
+    return { x: tx, y: ty, s: ts };
+  }
+
+  function buildTraces(D) {
+    var T = toDates(D.t);
+    var hc = hits(D, 1), hw = hits(D, -1);
+    return [
+      {
+        type: "scatter", mode: "lines", name: "BTC close (price)",
+        x: T, y: D.c,
+        line: { color: "#eaecef", width: 1.3 },
+        xaxis: "x", yaxis: "y",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M}<br>price=%{y:.2f}<extra></extra>"
+      },
+      {
+        type: "scatter", mode: "markers", name: "hit +1",
+        x: hc.x, y: hc.y,
+        marker: { color: "#0ecb81", size: 6 },
+        xaxis: "x", yaxis: "y",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M}<br>CORRECT +1 · %{y:.2f}<extra></extra>"
+      },
+      {
+        type: "scatter", mode: "markers", name: "hit -1",
+        x: hw.x, y: hw.y,
+        marker: { color: "#f6465d", size: 6 },
+        xaxis: "x", yaxis: "y",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M}<br>WRONG −1 · %{y:.2f}<extra></extra>"
+      },
+      {
+        type: "scatter", mode: "lines", name: "Volume",
+        x: T, y: D.v,
+        line: { color: "rgba(240,185,11,0.85)", width: 1 },
+        fill: "tozeroy", fillcolor: "rgba(240,185,11,0.12)",
+        xaxis: "x2", yaxis: "y2",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M}<br>vol=%{y:.3f}<extra></extra>"
+      },
+      {
+        type: "scatter", mode: "markers", name: "+1", showlegend: false,
+        x: hc.x, y: hc.s,
+        marker: { color: "#0ecb81", size: 7, symbol: "line-ns", line: { width: 2, color: "#0ecb81" } },
+        xaxis: "x3", yaxis: "y3",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M} · +1<extra></extra>"
+      },
+      {
+        type: "scatter", mode: "markers", name: "-1", showlegend: false,
+        x: hw.x, y: hw.s,
+        marker: { color: "#f6465d", size: 7, symbol: "line-ns", line: { width: 2, color: "#f6465d" } },
+        xaxis: "x3", yaxis: "y3",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M} · −1<extra></extra>"
+      },
+      {
+        type: "scatter", mode: "lines", name: "accumulate hit",
+        x: T, y: D.cum,
+        line: { color: "#f0b90b", width: 1.6 },
+        xaxis: "x4", yaxis: "y4",
+        hovertemplate: "%{x|%Y-%m-%d %H:%M}<br>cum=%{y}<extra></extra>"
+      }
+    ];
+  }
+
+  function layoutFor(D) {
+    var m = D.meta;
+    var ra = [new Date(m.t0), new Date(m.t1)];
+    var pr = [m.price_min, m.price_max];
+    var vr = [0, m.vol_max || 1];
+    var cr = [m.cum_min, m.cum_max];
+    return {
+      paper_bgcolor: "#0b0e11",
+      plot_bgcolor: "#0e1217",
+      font: { color: "#848e9c", size: 11 },
+      margin: { l: 50, r: 52, t: 28, b: 40 },
+      showlegend: true,
+      legend: { orientation: "h", y: 1.08, x: 0, bgcolor: "rgba(0,0,0,0)", font: { color: "#eaecef" } },
+      hovermode: "closest",
+      dragmode: "zoom",
+      xaxis:  { domain: [0,1], anchor: "y",  type: "date", range: ra, matches: "x4", showticklabels: false, gridcolor: "#1e2329", rangeslider: { visible: false } },
+      yaxis:  { domain: [0.54,1.00], title: "Price", range: pr, autorange: false, fixedrange: true, side: "right", gridcolor: "#1e2329" },
+      xaxis2: { domain: [0,1], anchor: "y2", type: "date", range: ra, matches: "x4", showticklabels: false, gridcolor: "#1e2329" },
+      yaxis2: { domain: [0.40,0.51], title: "Vol", range: vr, autorange: false, fixedrange: true, side: "right", gridcolor: "#1e2329" },
+      xaxis3: { domain: [0,1], anchor: "y3", type: "date", range: ra, matches: "x4", showticklabels: false, gridcolor: "#1e2329" },
+      yaxis3: { domain: [0.28,0.38], title: "hit", range: [-1.4,1.4], tickvals: [-1,0,1], fixedrange: true, side: "right", gridcolor: "#1e2329", zeroline: true },
+      xaxis4: {
+        domain: [0,1], anchor: "y4", type: "date", range: ra, title: "time (UTC)",
+        gridcolor: "#1e2329",
+        rangeslider: { visible: true, thickness: 0.05, bgcolor: "#0b0e11", bordercolor: "#2b3139" }
+      },
+      yaxis4: { domain: [0.0,0.24], title: "cum", range: cr, autorange: false, fixedrange: true, side: "right", gridcolor: "#1e2329", zeroline: true }
+    };
+  }
+
+  var cfg = { responsive: true, displaylogo: false, scrollZoom: true, doubleClick: "reset" };
+
+  function paint(a, b) {
+    if (busy) return Promise.resolve();
+    busy = true;
+    ignore = true;
+    status.textContent = "Querying memory DB…";
+    var url = "/api/window?t0=" + Math.floor(a) + "&t1=" + Math.floor(b) + "&res=auto";
+    return api(url).then(function (D) {
+      x0 = D.meta.t0; x1 = D.meta.t1;
+      document.getElementById("srcTag").innerHTML =
+        "memory DB · <b>" + D.meta.table + "</b> · n=" + D.meta.n;
+      status.textContent = "Rendering " + D.meta.n + " bars…";
+      return Plotly.react("chart", buildTraces(D), layoutFor(D), cfg);
+    }).then(function () {
+      status.textContent = "Ready · zoom auto-fits price min/max · data from in-memory SQLite";
+      setTimeout(function () { ignore = false; busy = false; }, 120);
+    }).catch(function (e) {
+      busy = false; ignore = false; fail(e);
+    });
+  }
+
+  function setHours(h) {
+    if (!STATS) return;
+    if (!h) return paint(STATS.t0, STATS.t1);
+    return paint(STATS.t1 - h * 3600 * 1000, STATS.t1);
+  }
+
+  // init
+  if (typeof Plotly === "undefined") {
+    fail("Plotly CDN not loaded. Check network, then refresh.");
+    return;
+  }
+
+  api("/api/stats").then(function (S) {
+    STATS = S;
+    msg.style.display = "none";
+    document.getElementById("hdr").style.display = "block";
+    document.getElementById("toolbar").style.display = "flex";
+    document.getElementById("sub").textContent =
+      (S.model || "") + " · dt=" + (S.dt || "5m") +
+      " · 5m bars=" + (S.n_5m || 0).toLocaleString() +
+      " · " + new Date(S.t0).toISOString().slice(0, 10) + " → " + new Date(S.t1).toISOString().slice(0, 10);
+    document.getElementById("stats").innerHTML =
+      '<span class="chip">acted <b>' + S.acted.toLocaleString() + "</b></span>" +
+      '<span class="chip g">correct <b>' + S.correct.toLocaleString() + "</b></span>" +
+      '<span class="chip r">wrong <b>' + S.wrong.toLocaleString() + "</b></span>" +
+      '<span class="chip">hit_rate <b>' + (S.hit_rate * 100).toFixed(2) + "%</b></span>" +
+      '<span class="chip g">cum_hit <b>' + (S.final_cum >= 0 ? "+" : "") + S.final_cum + "</b></span>";
+
+    document.querySelectorAll(".bar button[data-h]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".bar button[data-h]").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        setHours(parseInt(btn.getAttribute("data-h"), 10));
+      });
+    });
+
+    var gd = document.getElementById("chart");
+    gd.on("plotly_relayout", function (ev) {
+      if (busy || ignore) return;
+      var a = ev["xaxis.range[0]"], b = ev["xaxis.range[1]"];
+      if (a === undefined && ev["xaxis4.range[0]"] !== undefined) {
+        a = ev["xaxis4.range[0]"]; b = ev["xaxis4.range[1]"];
+      }
+      if (ev["xaxis.autorange"] || ev["xaxis4.autorange"]) {
+        setHours(24);
+        return;
+      }
+      if (a === undefined) return;
+      var na = +new Date(a), nb = +new Date(b);
+      if (!isFinite(na) || !isFinite(nb)) return;
+      if (Math.abs(na - x0) < 800 && Math.abs(nb - x1) < 800) return;
+      paint(na, nb);
+    });
+
+    setHours(24);
+  }).catch(function (e) {
+    fail(
+      e + "\n\nStart the server first:\n  python serve_chart.py\nthen open http://127.0.0.1:18765/chart_app.html"
+    );
+  });
+})();
+</script>
+</body>
+</html>
