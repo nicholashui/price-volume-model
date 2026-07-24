@@ -309,5 +309,113 @@ The filtered series $\{\hat V_t\}$ can be used inside an outer optimisation loop
 
 ---
 
-*Document generated from the model-development conversation.  
-Repository: `nicholashui/price-volume-model`*
+## 12. Extended Up/Down Move Probabilities (Intensity Model)
+
+Under the intensity model the infinitesimal probabilities of an up-move and a down-move are
+
+$$
+\begin{aligned}
+\mathbb{P}\bigl(S(t+dt)>S(t)\bigr)
+&=
+\frac{dt}{2}
+\Biggl(
+\frac{\kappa(\theta-V_t)}{\bar{v}} +
+\frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift}-\mu P_t\Bigr)
+\Biggr), \\
+\mathbb{P}\bigl(S(t+dt)<S(t)\bigr)
+&=
+\frac{dt}{2}
+\Biggl(
+\frac{\kappa(\theta-V_t)}{\bar{v}} -
+\frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift}-\mu P_t\Bigr)
+\Biggr).
+\end{aligned}
+$$
+
+### Python implementation
+
+```python
+import numpy as np
+
+def extended_move_probabilities(
+    V,
+    dP_drift,
+    P,
+    dt,
+    kappa,
+    theta,
+    v_bar,
+    alpha,
+    mu
+):
+    """
+    Compute extended P(up) and P(down) under the intensity model
+    using the full SV-Black-Scholes volume-factor parameters.
+
+    Parameters
+    ----------
+    V : float
+        Current volume factor.
+    dP_drift : float
+        Instantaneous drift of price (dP/dt | drift).
+    P : float
+        Current price level.
+    dt : float
+        Time step.
+    kappa, theta : float
+        CIR mean-reversion parameters of the volume factor.
+    v_bar : float
+        Average trade size.
+    alpha : float
+        Permanent impact coefficient.
+    mu : float
+        Baseline price drift parameter.
+
+    Returns
+    -------
+    p_up, p_down : float
+        Approximate probabilities of an up-move and a down-move
+        in the interval [t, t+dt].
+    """
+    total = kappa * (theta - V) / v_bar
+    imbalance = (dP_drift - mu * P) / alpha
+
+    lambda_plus  = 0.5 * (total + imbalance)
+    lambda_minus = 0.5 * (total - imbalance)
+
+    # Intensities must be non-negative
+    lambda_plus  = max(lambda_plus,  0.0)
+    lambda_minus = max(lambda_minus, 0.0)
+
+    p_up   = lambda_plus  * dt
+    p_down = lambda_minus * dt
+
+    # Optional: renormalise if the sum exceeds 1 (very large dt)
+    total_p = p_up + p_down
+    if total_p > 1.0:
+        p_up   /= total_p
+        p_down /= total_p
+
+    return p_up, p_down
+
+
+# ------------------------------------------------------------------
+# Example usage
+# ------------------------------------------------------------------
+if __name__ == "__main__":
+    p_up, p_down = extended_move_probabilities(
+        V=1.2,
+        dP_drift=0.03,
+        P=100.0,
+        dt=1/252/78,          # e.g. 5-minute bar
+        kappa=3.0,
+        theta=1.0,
+        v_bar=100.0,
+        alpha=0.01,
+        mu=0.05
+    )
+    print(f"P(up)   = {p_up:.6f}")
+    print(f"P(down) = {p_down:.6f}")
+```
+
+The function returns the probabilities that are consistent with the volume-driven stochastic-volatility dynamics derived earlier in this document.
