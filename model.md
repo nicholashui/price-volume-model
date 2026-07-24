@@ -8,43 +8,43 @@ This document records the complete derivation path discussed in the conversation
 
 ## 1. Starting Point: Classical Black–Scholes
 
-The classical Black–Scholes model describes the asset price \(P_t\) by geometric Brownian motion:
+The classical Black–Scholes model describes the asset price $P_t$ by geometric Brownian motion:
 
-\[
+$$
 dP_t = \mu P_t\, dt + \sigma P_t\, dW_t
-\]
+$$
 
 Volume is absent. Temporary price fluctuations are captured only through the continuous diffusion term.
 
 ---
 
-## 2. Joint Dynamics of the \((P, V)\) Pair
+## 2. Joint Dynamics of the $(P, V)$ Pair
 
-To incorporate volume \(V_t\) we move to a bivariate description.
+To incorporate volume $V_t$ we move to a bivariate description.
 
 ### 2.1 Continuous diffusion approximation
 
-\[
+$$
 \begin{cases}
 dP_t = \mu(P_t, V_t)\, dt + \sigma(P_t, V_t)\, dW_t^P \\
 dV_t = \alpha(P_t, V_t)\, dt + \beta(P_t, V_t)\, dW_t^V
 \end{cases}
-\]
+$$
 
-with instantaneous correlation \(d\langle W^P, W^V\rangle_t = \rho\, dt\).
+with instantaneous correlation $d\langle W^P, W^V\rangle_t = \rho\, dt$.
 
 ### 2.2 Mixture of Distributions Hypothesis (MDH)
 
-Both price changes and volume are driven by a common latent information-arrival process \(I_t\). In continuous time this yields a subordinated Brownian motion whose directing process is proportional to cumulative volume.
+Both price changes and volume are driven by a common latent information-arrival process $I_t$. In continuous time this yields a subordinated Brownian motion whose directing process is proportional to cumulative volume.
 
 ### 2.3 Marked point-process description (high-frequency foundation)
 
 Trade arrival times form a point process. Each trade carries a mark (size and sign). The cumulative processes are:
 
-\[
+$$
 V_t = \sum_{t_i\le t} v_i, \qquad
 P_t = P_0 + \sum_{t_i\le t}\Bigl(\operatorname{impact}(v_i,\operatorname{sign}_i) + \operatorname{noise}_i\Bigr)
-\]
+$$
 
 Temporary impact is a function of the instantaneous trading rate and subsequently decays; permanent impact remains.
 
@@ -53,22 +53,22 @@ Temporary impact is a function of the instantaneous trading rate and subsequentl
 ## 3. Buy and Sell Intensities
 
 Define:
-- \(\lambda^+_t\) — intensity of buy-initiated trades
-- \(\lambda^-_t\) — intensity of sell-initiated trades
+- $\lambda^+_t$ — intensity of buy-initiated trades
+- $\lambda^-_t$ — intensity of sell-initiated trades
 
 **Volume compensator**
 
-\[
+$$
 dV_t = \bar{v}\,(\lambda^+_t + \lambda^-_t)\, dt
-\]
+$$
 
 **Price dynamics with order-flow imbalance**
 
-\[
+$$
 dP_t = \alpha(\lambda^+_t - \lambda^-_t)\, dt + \sigma_t\, dW_t
-\]
+$$
 
-(or with an additional temporary-impact term \(\beta(v_t)\, dt\)).
+(or with an additional temporary-impact term $\beta(v_t)\, dt$).
 
 ---
 
@@ -76,20 +76,20 @@ dP_t = \alpha(\lambda^+_t - \lambda^-_t)\, dt + \sigma_t\, dW_t
 
 The continuous limit that retains a volume channel is the stochastic-volatility model
 
-\[
+$$
 \begin{aligned}
 dP_t &= \mu P_t\, dt + \sigma(V_t)\, P_t\, dW_t, \\
 dV_t &= \kappa(\theta - V_t)\, dt + \xi\sqrt{V_t}\, dZ_t,
 \end{aligned}
-\]
+$$
 
 with
 
-\[
+$$
 d\langle W,Z\rangle_t = \rho\, dt.
-\]
+$$
 
-When \(\sigma(V)\) is constant the system collapses to classical Black–Scholes.
+When $\sigma(V)$ is constant the system collapses to classical Black–Scholes.
 
 ---
 
@@ -97,15 +97,15 @@ When \(\sigma(V)\) is constant the system collapses to classical Black–Scholes
 
 Substituting the intensity representation into the SV model yields
 
-\[
+$$
 \begin{aligned}
 dP_t &= \Bigl(\mu P_t + \alpha(\lambda^+_t - \lambda^-_t)\Bigr)\, dt
 + \sigma(\lambda^+_t + \lambda^-_t)\, P_t\, dW_t, \\
 dV_t &= \bar{v}\,(\lambda^+_t + \lambda^-_t)\, dt.
 \end{aligned}
-\]
+$$
 
-(The intensities \(\lambda^\pm\) may themselves follow mean-reverting or Hawkes dynamics.)
+(The intensities $\lambda^\pm$ may themselves follow mean-reverting or Hawkes dynamics.)
 
 ---
 
@@ -115,19 +115,19 @@ Inverting the drift relations:
 
 **Total intensity (from volume)**
 
-\[
+$$
 \lambda^+_t + \lambda^-_t = \frac{1}{\bar{v}}\frac{dV_t}{dt}
-\]
+$$
 
 **Imbalance (from price drift)**
 
-\[
+$$
 \lambda^+_t - \lambda^-_t = \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
-\]
+$$
 
 **Explicit solution**
 
-\[
+$$
 \begin{aligned}
 \lambda^+_t &= \frac12\Biggl(
 \frac{1}{\bar{v}}\frac{dV_t}{dt}
@@ -138,7 +138,7 @@ Inverting the drift relations:
 - \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
 \Biggr).
 \end{aligned}
-\]
+$$
 
 ---
 
@@ -146,7 +146,7 @@ Inverting the drift relations:
 
 Matching the volume drift to the CIR mean-reversion term gives the intensity expressions that are consistent with every SV parameter:
 
-\[
+$$
 \begin{aligned}
 \lambda^+_t &= \frac12\left(
 \frac{\kappa(\theta - V_t)}{\bar{v}}
@@ -157,7 +157,7 @@ Matching the volume drift to the CIR mean-reversion term gives the intensity exp
 - \frac{1}{\alpha}\Bigl(\tfrac{dP_t}{dt}\big|_{\rm drift} - \mu P_t\Bigr)
 \right).
 \end{aligned}
-\]
+$$
 
 ---
 
@@ -165,59 +165,59 @@ Matching the volume drift to the CIR mean-reversion term gives the intensity exp
 
 | Parameter | Identification |
 |-----------|----------------|
-| \(\theta\) | Long-run mean of the volume factor \(V\) |
-| \(\kappa\) | \(-\frac1\Delta\log\operatorname{Corr}(V_{t+\Delta},V_t)\) |
-| \(\xi\) | \(\sqrt{\sum(\Delta V)^2\big/\sum V\cdot\Delta t}\) |
-| \(\mu\) | Residual average drift of price after removing imbalance |
-| \(\alpha\) | Regression coefficient of returns on \((\lambda^+-\lambda^-)\) |
-| \(\sigma(V)\) | Fitted function of realised volatility versus \(V\) |
-| \(\rho\) | Instantaneous correlation \(\operatorname{Corr}(dP,dV)\) |
+| $\theta$ | Long-run mean of the volume factor $V$ |
+| $\kappa$ | $-\frac1\Delta\log\operatorname{Corr}(V_{t+\Delta},V_t)$ |
+| $\xi$ | $\sqrt{\sum(\Delta V)^2\big/\sum V\cdot\Delta t}$ |
+| $\mu$ | Residual average drift of price after removing imbalance |
+| $\alpha$ | Regression coefficient of returns on $(\lambda^+-\lambda^-)$ |
+| $\sigma(V)$ | Fitted function of realised volatility versus $V$ |
+| $\rho$ | Instantaneous correlation $\operatorname{Corr}(dP,dV)$ |
 
-The same \(\kappa,\theta\) can be recovered by regressing observed total intensity on the current level of \(V\).
+The same $\kappa,\theta$ can be recovered by regressing observed total intensity on the current level of $V$.
 
 ---
 
 ## 9. Extended Kalman Filter for Latent Volume Factor
 
-Because the CIR process is non-linear, an Extended Kalman Filter (EKF) is used to filter the latent volume factor \(V_t\) from observed returns and volume increments.
+Because the CIR process is non-linear, an Extended Kalman Filter (EKF) is used to filter the latent volume factor $V_t$ from observed returns and volume increments.
 
 ### State transition (Euler)
 
-\[
+$$
 V_{t+1} = V_t + \kappa(\theta - V_t)\Delta t + \xi\sqrt{\max(V_t,\varepsilon)}\sqrt{\Delta t}\,\eta_t
-\]
+$$
 
 ### Observation equations
 
-\[
+$$
 \begin{aligned}
 r_t &= \bigl(\mu - \tfrac12\sigma(V_t)^2\bigr)\Delta t + \alpha\cdot\operatorname{imbalance}_t + \sigma(V_t)\sqrt{\Delta t}\,\varepsilon_t^{(1)}, \\
 \Delta v_t &= \kappa(\theta - V_t)\Delta t + \text{noise}.
 \end{aligned}
-\]
+$$
 
 ### EKF recursion (summary)
 
 **Predict**
 
-\[
+$$
 \begin{aligned}
 \hat V_{t|t-1} &= \hat V_{t-1|t-1} + \kappa(\theta - \hat V_{t-1|t-1})\Delta t, \\
 P_{t|t-1} &= F_t P_{t-1|t-1} F_t^\top + Q_t,
 \end{aligned}
-\]
+$$
 
-where \(F_t = 1-\kappa\Delta t\) and \(Q_t = \xi^2\hat V_{t|t-1}\Delta t\).
+where $F_t = 1-\kappa\Delta t$ and $Q_t = \xi^2\hat V_{t|t-1}\Delta t$.
 
 **Update**
 
-\[
+$$
 \begin{aligned}
 K_t &= P_{t|t-1} H_t^\top(H_t P_{t|t-1} H_t^\top + R)^{-1}, \\
 \hat V_{t|t} &= \hat V_{t|t-1} + K_t\bigl(y_t - h(\hat V_{t|t-1})\bigr), \\
 P_{t|t} &= (I - K_t H_t)P_{t|t-1}.
 \end{aligned}
-\]
+$$
 
 ### Reference Python implementation
 
@@ -280,17 +280,17 @@ class VolumeSV_EKF:
         return V_filt, P_filt
 ```
 
-The filtered series \(\{\hat V_t\}\) can be used inside an outer optimisation loop (prediction-error likelihood) to estimate the full set of SV parameters.
+The filtered series $\{\hat V_t\}$ can be used inside an outer optimisation loop (prediction-error likelihood) to estimate the full set of SV parameters.
 
 ---
 
 ## 10. Summary of the Model Hierarchy
 
-| Level | Description | Recovers classical BS when \ldots |
+| Level | Description | Recovers classical BS when $\ldots$ |
 |-------|-------------|----------------------------------|
 | Marked point process | Tick-level buy/sell intensities + marks | High intensity, balanced flow, temporary impact averaged out |
-| Intensity SDEs | \(\lambda^\pm\) dynamics | Imbalance \(\to 0\), \(\sigma\) constant |
-| Volume-driven SV-BS | \(V_t\) as CIR factor driving \(\sigma(V)\) | \(\sigma(V)=\text{const}\) |
+| Intensity SDEs | $\lambda^\pm$ dynamics | Imbalance $\to 0$, $\sigma$ constant |
+| Volume-driven SV-BS | $V_t$ as CIR factor driving $\sigma(V)$ | $\sigma(V)=\text{const}$ |
 | Classical Black–Scholes | Pure GBM | All volume / intensity structure removed |
 
 ---
@@ -298,12 +298,12 @@ The filtered series \(\{\hat V_t\}\) can be used inside an outer optimisation lo
 ## 11. Conversation Chronology (for reference)
 
 1. Temporary asset price change linked to Black–Scholes.
-2. Joint temporal description of the \((P,V)\) pair.
+2. Joint temporal description of the $(P,V)$ pair.
 3. Marked point-process formulation.
-4. Explicit buy/sell intensity representation of \(dP\) and \(dV\).
+4. Explicit buy/sell intensity representation of $dP$ and $dV$.
 5. Substitution into the volume-driven SV-Black–Scholes equations.
-6. Algebraic inversion for \(\lambda^+\) and \(\lambda^-\).
-7. Extension of the inversion using the full CIR parameters \(\kappa,\theta\).
+6. Algebraic inversion for $\lambda^+$ and $\lambda^-$.
+7. Extension of the inversion using the full CIR parameters $\kappa,\theta$.
 8. Identification formulae for all SV parameters.
 9. Extended Kalman Filter implementation for the latent volume factor.
 
